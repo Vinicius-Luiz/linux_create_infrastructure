@@ -128,7 +128,7 @@ Agora você consegue acessar remotamente
 4. `chmod +x [nome_arquivo].sh` Convertendo arquivo .sh em executável
 5. `./[nome_arquivo].sh` executar 
 
-## Manipulando grupos
+# Manipulando grupos
 
 `cat /etc/group` mostra os grupos existentes
 
@@ -137,7 +137,7 @@ Agora você consegue acessar remotamente
 - `groupadd [NOME_GRUPO]`: criando grupo
 - `groupdel [NOME_GRUPO]`: removendo grupo
 
-## Permissões no Linux
+# Permissões no Linux
 
 <img src="Images/permission001.png"></img>
 
@@ -177,3 +177,53 @@ O controle de versão é uma parte importante da IaC. Os arquivos de configuraç
 # Mover arquivos máquina virtual para máquina local
 
 `scp -P 22 [user_linux]@[ip_linux]:[source_directory] [target_directory]`
+
+# Gerenciamento de pacotes
+
+Pacote pode ser um software, driver, codec de vídeo. Quando vamos instalar, por exemplo, o Microsoft Teams, ele pode estar no repositório da própria Microsoft, como também, pode estar no repositório da distribuição Ubuntu.
+
+Para o **Ubuntu**:
+
+- `apt-get`: não é muito amigável, é mais baixo-nível. Se eu for criar um script para instalar uma série de softwares, é recomendável utilizar esse gerenciador de pacote porque ele não dará muito retorno do que está sendo feito.
+- `apt`: possui uma interação com o usuário mais amigável.
+  - `apt list -- installed`: Visualizar o que tenho instalado na máquina;
+  - `apt list --upgradable`: Verificar atualizações disponíveis de softwares;
+  - `apt search [nome] `: Pesquisar softwares;
+  - `apt install [nome]`: Instalar softwares;
+  - `apt update \n apt upgrade -y` : Atualização dos pacotes disponíveis **(-y não pergunta nada)**; 
+
+# Gerenciamento de discos
+
+Nas partições no Linux cada disco recebe um nome indicado por *sd* (sda, sdb, sdc...). Cada partição do disco é numerada. Exem´plo: sda1, sda2, sda3, sdb1, sdb2...
+
+<img src="images/discos001.png"></img>
+
+- `lsblk`: Visualizar os discos
+- `fdisk -l`: Visualizar os discos² (mostra a localização do disco)
+
+## Adicionando novo disco
+
+1. Criar novo disco rígido
+
+<img src="images/discos002.png" width=75%></img>
+
+<img src="images/discos003.png" width=75%></img>
+
+2. `fdisk /dev/sdb` Criar uma ou mais partições. (o caminho deve ser o caminho do disco)
+   1. `n` para adicionar nova partição
+   2. `p` caso for a primeira partição
+   3. Número de partições, setores e último setor são default 
+   4. `w`para salvar
+3. `mkfs.ext4 /dev/sdb`Formatar o disco
+   1. ext4 é o sistema de arquivos padrão para o Linux Ubuntu
+   2. Localização do disco
+4. Montar disco
+   1. É uma boa prática montar o disco na pasta `/mnt/`
+   2. `mount /dev/sdb /mnt/[nome_pasta]`: Montar disco no diretório
+      1. `umount /dev/sdb`: desmontar disco
+      2. Ao desmontar, não se perde os arquivos dentro do disco
+
+ 	5. Montar disco automaticamente
+     	1. `nano /etc/fstab`: script de montagem de discos
+     	2. Na última linha, executar o comando:  `[local_disco] [local_montagem] [sistema_arquivo] defaults 0 0`
+         	1. `/dev/sdb /disk_sdb ext4 defaults 0 0`
