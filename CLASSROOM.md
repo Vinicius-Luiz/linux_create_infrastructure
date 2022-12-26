@@ -194,7 +194,7 @@ Para o **Ubuntu**:
 
 # Gerenciamento de discos
 
-Nas partições no Linux cada disco recebe um nome indicado por *sd* (sda, sdb, sdc...). Cada partição do disco é numerada. Exem´plo: sda1, sda2, sda3, sdb1, sdb2...
+Nas partições no Linux cada disco recebe um nome indicado por *sd* (sda, sdb, sdc...). Cada partição do disco é numerada. Exemplo: sda1, sda2, sda3, sdb1, sdb2...
 
 <img src="images/discos001.png"></img>
 
@@ -224,6 +224,79 @@ Nas partições no Linux cada disco recebe um nome indicado por *sd* (sda, sdb, 
       2. Ao desmontar, não se perde os arquivos dentro do disco
 
  	5. Montar disco automaticamente
-     	1. `nano /etc/fstab`: script de montagem de discos
-     	2. Na última linha, executar o comando:  `[local_disco] [local_montagem] [sistema_arquivo] defaults 0 0`
+          	1. `nano /etc/fstab`: script de montagem de discos
+          	2. Na última linha, executar o comando:  `[local_disco] [local_montagem] [sistema_arquivo] defaults 0 0`
          	1. `/dev/sdb /disk_sdb ext4 defaults 0 0`
+
+# Manipulando arquivos
+
+- `cp [origem] [destino]`: Copiar arquivo
+  - `-i`: pergunta antes de sobrepor os arquivos
+  - `-r`: copia recursivamente (pasta dentro de pasta)
+  - `-v`: modo verboso
+- `mv [origem] [destino]`: Mover arquivo (se não especificar o nome do arquivo no destino, o nome será o mesmo da origem)
+  - Modo recursivo não está disponível
+  - É possível renomear arquivos
+
+# Manipulando processos
+
+- `ps aux`: Visualiza todos os processos ativos
+- `kill [PID]`: mata o processo
+- `killall [nome_processo]`: mata todos os processos pelo nome
+
+- `w`: usuários logados
+- `who -a`: visualizar PID dos usuários
+
+# Servidor de Arquivos
+
+**SAMBA** é um software que tem como principal finalidade o compartilhamento de arquivos de servidores Linux para consumo em computadores Windows. Desta forma, é possível utilizar o Linux como servidor de arquivos, servidor de impressão, entre outros e acessara estas informações através de computadores com Windows.  
+
+É aconselhável separar os discos para o uso do SO e para o uso do compartilhamento de arquivos, para evitar a concorrência entre usuários e SO nesse disco.
+
+## Instalação do SAMBA e configuração inicial
+
+- `apt install samba -y`: instalar o SAMBA
+- `cd /disk_sdb ` > `mkdir publico`: criando uma pasta pública
+  - `chmod publico 777`: a pasta terá permissão full para todos os usuários
+- `nano /etc/samba/smb.conf` Acessar o arquivo de configuração do SAMBA
+- <img src='images/samba001.png'></img>
+  - criar novo bloco de configuração `[publico]` e setar as seguintes configurações iniciais: **OBS: o bloco não precisa necessariamente ter o mesmo nome da pasta no parâmetros path**
+    - `path`: caminho da pasta a ser compartilhada
+    - `writable`: a pasta pode ter os arquivos editados
+    - `guest ok`: todos que estrarem estarão OK
+    - `guest only`: todos que entrarem serão considerados convidados
+- `systemctl restart smbd`  : reiniciar o serviço do SAMBA
+  - SAMBA é considerado um serviço, ele houve requisições. Serviços executados em segundo plano são chamados de DAEMON no Linux. Por ser um DAEMON, o SAMBA terá o sufixo **d**.
+- `systemctl status smbd`: Verificar status do serviço SAMBA
+- `systemctl enable smbd`: O serviço do SAMBA não reinicia sozinho ao ligar o servidor Linux. Este comando configura o início do serviço ao ligar o Linux
+
+## Configurando o acesso via máquina cliente
+
+- <img src='Images/servidor_arquivos001.png'></img>
+  - Mapear nova unidade de rede
+- <img src='images/servidor_arquivos002.png'></img>
+  - Configurar o IP do servidor Linux e a pasta. **O nome da pasta é o mesmo nome do bloco de configuração do SAMBA.**
+
+# Servidor WEB
+
+Servidor web é um software responsável por aceitar pedidos em HTTP de clientes, geralmente os navegadores e serviços com respostas em HTTP, incluindo opcionalmente dados, que geralmente são páginas web.
+
+## Instalando apache2
+
+`apt install apache2 -y`: instalando o apache2. A partir dessa instalação, o servidor web já está funcionando.
+
+<img src="images/servidor_web001.png"></img>
+
+# Servidor de Banco de Dados
+
+Servidores de banco de dados fornecem um ambiente multiusuário onde muitos usuários podem acessar o banco de dados simultaneamente, mantendo a segurança e ocultando o sistema de gerenciamento dos clientes.
+
+`apt install mysql-server-8.0 -y`: Instalar MySQL
+
+`mysql -y [usuario] -p`: acessar banco de dados
+
+`show databases`: Ver todos os banco de dados criados
+
+`create database [database_name]`: criar banco de dados
+
+`use [database_name]`: acessar um banco de dados
