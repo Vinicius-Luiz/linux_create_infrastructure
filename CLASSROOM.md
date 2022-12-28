@@ -190,7 +190,7 @@ Para o **Ubuntu**:
   - `apt list --upgradable`: Verificar atualizações disponíveis de softwares;
   - `apt search [nome] `: Pesquisar softwares;
   - `apt install [nome]`: Instalar softwares;
-  - `apt update \n apt upgrade -y` : Atualização dos pacotes disponíveis **(-y não pergunta nada)**; 
+  - `apt update` & `apt upgrade -y` : Atualização dos pacotes disponíveis **(-y não pergunta nada)**; 
 
 # Gerenciamento de discos
 
